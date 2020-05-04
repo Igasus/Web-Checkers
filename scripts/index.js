@@ -1,20 +1,18 @@
 let field = document.getElementById("field");
 let background = document.getElementById("background");
 let letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'E'];
-let map = [
-	[0, 0, 0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0, 0, 0]
-];
+let map = [];
 let activatedCells = [];
 let turn = 1;
 
 generate = () => {
+	for (let i = 0; i < 8; i++) {
+		let arr = [];
+		for (let j = 0; j < 8; j++)
+			arr.push(0);
+		map.push(arr);
+	}
+
 	let frontSide = document.getElementById("field_front");
 
 	for (let y = 0; y < 10; y++) {

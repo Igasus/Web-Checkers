@@ -39,7 +39,6 @@ body {
 	background-color: #711;
 	border: solid 1px black;
 	transform-origin: center;
-	backface-visibility: hidden;
 }
 
 
@@ -103,7 +102,7 @@ body {
 .black:after { background-color: #000; border: solid 1px #fff; }
 .white { background-color: #fff; }
 .white:before { background-color: #fff;}
-.white:after { background-color: #fff; border: solid 1px 000; }
+.white:after { background-color: #fff; border: solid 1px #000; }
 
 
 
