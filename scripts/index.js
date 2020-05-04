@@ -1,8 +1,20 @@
 let field = document.getElementById("field");
 let background = document.getElementById("background");
 let letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'E'];
+let map = [
+	[0, 0, 0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0, 0, 0]
+];
+let activatedCells = [];
+let turn = 1;
 
-let generate = () => {
+generate = () => {
 	let frontSide = document.getElementById("field_front");
 
 	for (let y = 0; y < 10; y++) {
@@ -25,7 +37,7 @@ let generate = () => {
 			else {
 				newElement.classList.add("cell");
 				newElement.classList.add((x + y) % 2 == 0 ? "black" : "white");
-				newElement.id = `${x}_${y}`;
+				newElement.id = `${x - 1}_${y - 1}`;
 			}
 
 			frontSide.appendChild(newElement);
@@ -91,10 +103,11 @@ onModeChange = e => {
 
 
 
-let createNewFigure = (color, segmentsAmount = 10) => {
+createNewFigure = (color, segmentsAmount = 20) => {
 	let figure = document.createElement("div");
 	figure.classList.add("figure");
 	figure.classList.add(color);
+	figure.style.color = color;
 	
 	let segmentWidth = 70 * Math.PI / segmentsAmount;
 	for (let i = 0; i < segmentsAmount; i++) {
@@ -118,7 +131,7 @@ let createNewFigure = (color, segmentsAmount = 10) => {
 	return figure;
 }
 
-let setFigure = (figure, x, y) => {
+setFigure = (figure, x, y) => {
 	let startPosition = {
 		x: 78,
 		y: 70
@@ -128,14 +141,118 @@ let setFigure = (figure, x, y) => {
 	figure.style.top = `${startPosition.y + 82 * y}px`;
 	figure.style.right = "auto";
 	figure.style.bottom = "auto";
+
+	field.appendChild(figure);
+	map[x][y] = figure.style.color == "black" ? -1 : 1;
+}
+
+
+
+getFigureCoordinates = figure => {
+	let startPosition = {
+		x: 78,
+		y: 70
+	};
+
+	let top = figure.style.top.slice(0, figure.style.top.length - 2);
+	let left = figure.style.left.slice(0, figure.style.left.length - 2);
+	
+	let result = {
+		x: (left - startPosition.x) / 82,
+		y: (top - startPosition.y) / 82
+	};
+
+	return result;
 }
 
 
 
 
+getMustSteps = figureCoordinates => {
+	let result = [];
+
+	let figureX = figureCoordinates.x;
+	let figureY = figureCoordinates.y;
+	if (figureX >= 2 && figureY >= 2)
+		if (map[figureX - 1][figureY - 1] == -map[figureX][figureY])
+			if (map[figureX - 2][figureY - 2] == 0) {
+				let coordinates = {
+					x: figureX - 2,
+					y: figureY - 2
+				};
+				result.push(coordinates);
+			}
+
+	if (figureX <= 5 && figureY >= 2)
+		if (map[figureX + 1][figureY - 1] == -map[figureX][figureY])
+			if (map[figureX + 2][figureY - 2] == 0) {
+				let coordinates = {
+					x: figureX + 2,
+					y: figureY - 2
+				}
+				result.push(coordinates);
+			}
+
+	return result;
+}
+
+
+
+getNextStepCellsCoordinates = figure => {
+	let figureCoordinates = getFigureCoordinates(figure);
+	let figureX = figureCoordinates.x;
+	let figureY = figureCoordinates.y;
+	let mustSteps = getMustSteps(figureCoordinates);
+
+	if (mustSteps.length > 0)
+		return mustSteps;
+
+	let result = [];
+
+	if (figureX >= 1 && figureY >= 1)
+		if (map[figureX - 1][figureY - 1] == 0)
+			result.push({
+				x: figureX - 1,
+				y: figureY - 1
+			});
+	if (figureX <= 6 && figureY >= 1)
+		if (map[figureX + 1][figureY - 1] == 0)
+			result.push({
+				x: figureX + 1,
+				y: figureY - 1
+			});
+
+	return result;
+}
+
+
+
+setCellsColor = (cellsCoordinates, color) => {
+	toActivateCells = [];
+	for (let toColor of cellsCoordinates) {
+		let toAdd = true;
+		for (let activatedCell of activatedCells)
+			if (toColor.x == activatedCell.x && toColor.y == activatedCell.y)
+				toAdd = false;
+
+		if (toAdd)
+			toActivateCells.push(toColor);
+	}
+	
+	for (let coordinates of toActivateCells)
+		document.getElementById(`${coordinates.x}_${coordinates.y}`).style.backgroundColor = color;
+}
+
+setCellsHeight = (cellsCoordinates, height) => {
+	for (let coordinates of cellsCoordinates)
+		document.getElementById(`${coordinates.x}_${coordinates.y}`).style.transform = `translateZ(${height}px)`;
+}
+
+
+
 
 fillField = () => {
-	for (let y = 0; y < 8; y++) {
+	for (let y = 0; y < 8; y++) 
 		for (let x = 0; x < 8; x++) {
 			if (y == 3 || y == 4)
 				break;
@@ -144,12 +261,35 @@ fillField = () => {
 				let color = y < 3 ? "black" : "white";
 				let figure = createNewFigure(color, 20);
 				setFigure(figure, x, y);
-				field.appendChild(figure);
+				figure.addEventListener("click", e => {
+					if (turn != (figure.style.color == "white" ? 1 : -1))
+						return;
+
+					temporary = activatedCells;
+					activatedCells = [];
+					setCellsColor(temporary, "black");
+					temporary = getNextStepCellsCoordinates(figure);
+					setCellsColor(temporary, "red");
+					activatedCells = temporary;
+				});
+				figure.addEventListener("mouseover", e => {
+					if (turn != (figure.style.color == "white" ? 1 : -1))
+						return;
+
+					nextCoordinates = getNextStepCellsCoordinates(figure);
+					setCellsColor(nextCoordinates, "orange");
+					setCellsHeight(nextCoordinates, 10);
+					figure.style.transform = "translateZ(25px)";
+				});
+				figure.addEventListener("mouseleave", e => {
+					nextCoordinates = getNextStepCellsCoordinates(figure);
+					setCellsColor(nextCoordinates, "black");
+					setCellsHeight(nextCoordinates, -20);
+					figure.style.transform = "translateZ(5px)";
+				});
 			}
 		}
-	}
 }
-
 
 
 

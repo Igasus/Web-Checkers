@@ -39,6 +39,7 @@ body {
 	background-color: #711;
 	border: solid 1px black;
 	transform-origin: center;
+	backface-visibility: hidden;
 }
 
 
@@ -94,14 +95,15 @@ body {
 	height: 80px;
 	border: solid 1px black;
 	transform: translateZ(-20px);
+	transition: all 0.1s ease-in-out;
 }
 
 .black { background-color: #000; }
-.black:before { background-color: #000; }
-.black:after { background-color: #000; }
+.black:before { background-color: #000;}
+.black:after { background-color: #000; border: solid 1px #fff; }
 .white { background-color: #fff; }
-.white:before { background-color: #fff; }
-.white:after { background-color: #fff; }
+.white:before { background-color: #fff;}
+.white:after { background-color: #fff; border: solid 1px 000; }
 
 
 
@@ -218,6 +220,8 @@ input[type=radio]:checked + label:before {
 	display: inline-block;
 	transform-style: preserve-3d;
 	transform: translateZ(5px);
+	transition: all 0.1s ease-in-out;
+	cursor: pointer;
 }
 
 .figure:before, .figure:after {
@@ -238,4 +242,5 @@ input[type=radio]:checked + label:before {
 	height: 25px;
 	background-color: grey;
 	border: solid 1px black;
+	backface-visibility: hidden;
 }
