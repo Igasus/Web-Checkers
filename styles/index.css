@@ -20,7 +20,7 @@ body {
 	left: 0px;
 	width: 100%;
 	height: 100%;
-	cursor: move;
+	cursor: all-scroll;
 	pointer-events: none;
 	z-index: 2;
 }
@@ -211,6 +211,9 @@ input[type=radio]:checked + label:before {
  	margin: 3px;
 }
 
+#play_mode + label { cursor: pointer; }
+#rotate_mode + label { cursor: all-scroll; }
+
 
 
 
@@ -220,7 +223,6 @@ input[type=radio]:checked + label:before {
 	transform-style: preserve-3d;
 	transform: translateZ(5px);
 	transition: all 0.1s ease-in-out;
-	cursor: pointer;
 }
 
 .figure:before, .figure:after {
