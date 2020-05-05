@@ -47,6 +47,7 @@ generate = () => {
 
 
 
+
 let scrollingStart = false;
 
 let horizontalAngle = 0;
@@ -87,7 +88,6 @@ background.addEventListener("mousemove", e => {
 
 
 
-
 onModeChange = e => {
 	let mode = e.target.value;
 
@@ -97,6 +97,8 @@ onModeChange = e => {
 		background.style.pointerEvents = "none";
 
 }
+
+
 
 
 
@@ -126,10 +128,37 @@ createNewFigure = (color, segmentsAmount = 20) => {
 		figure.style.right = "-50px";
 	}
 
+	figure.addEventListener("click", e => {
+		if (turn != (figure.style.color == "white" ? 1 : -1))
+			return;
+
+		temporary = activatedCells;
+		activatedCells = [];
+		setCellsColor(temporary, "black");
+		temporary = getNextStepCellsCoordinates(figure);
+		setCellsColor(temporary, "red");
+		activatedCells = temporary;
+	});
+	figure.addEventListener("mouseover", e => {
+		if (turn != (figure.style.color == "white" ? 1 : -1))
+			return;
+
+		nextCoordinates = getNextStepCellsCoordinates(figure);
+		setCellsColor(nextCoordinates, "orange");
+		setCellsHeight(nextCoordinates, 10);
+		figure.style.transform = "translateZ(25px)";
+	});
+	figure.addEventListener("mouseleave", e => {
+		nextCoordinates = getNextStepCellsCoordinates(figure);
+		setCellsColor(nextCoordinates, "black");
+		setCellsHeight(nextCoordinates, -20);
+		figure.style.transform = "translateZ(5px)";
+				});
+
 	return figure;
 }
 
-setFigure = (figure, x, y) => {
+setFigurePlace = (figure, x, y) => {
 	let startPosition = {
 		x: 78,
 		y: 70
@@ -171,25 +200,38 @@ getMustSteps = figureCoordinates => {
 
 	let figureX = figureCoordinates.x;
 	let figureY = figureCoordinates.y;
+
 	if (figureX >= 2 && figureY >= 2)
 		if (map[figureX - 1][figureY - 1] == -map[figureX][figureY])
-			if (map[figureX - 2][figureY - 2] == 0) {
-				let coordinates = {
+			if (map[figureX - 2][figureY - 2] == 0)
+				result.push({
 					x: figureX - 2,
 					y: figureY - 2
-				};
-				result.push(coordinates);
-			}
+				});
 
 	if (figureX <= 5 && figureY >= 2)
 		if (map[figureX + 1][figureY - 1] == -map[figureX][figureY])
-			if (map[figureX + 2][figureY - 2] == 0) {
-				let coordinates = {
+			if (map[figureX + 2][figureY - 2] == 0)
+				result.push({
 					x: figureX + 2,
 					y: figureY - 2
-				}
-				result.push(coordinates);
-			}
+				});
+
+	if (figureX >= 2 && figureY <= 5)
+		if (map[figureX - 1][figureY + 1] == -map[figureX][figureY])
+			if (map[figureX - 2][figureY + 2] == 0)
+				result.push({
+					x: figureX - 2,
+					y: figureY + 2
+				});
+
+	if (figureX <= 5 && figureY <= 5)
+		if (map[figureX + 1][figureY + 1] == -map[figureX][figureY])
+			if (map[figureX + 2][figureY + 2] == 0)
+				result.push({
+					x: figureX + 2,
+					y: figureY + 2
+				});
 
 	return result;
 }
@@ -207,17 +249,32 @@ getNextStepCellsCoordinates = figure => {
 
 	let result = [];
 
-	if (figureX >= 1 && figureY >= 1)
+	if (turn == 1 && figureX >= 1 && figureY >= 1)
 		if (map[figureX - 1][figureY - 1] == 0)
 			result.push({
 				x: figureX - 1,
 				y: figureY - 1
 			});
-	if (figureX <= 6 && figureY >= 1)
+
+	if (turn == 1 && figureX <= 6 && figureY >= 1)
 		if (map[figureX + 1][figureY - 1] == 0)
 			result.push({
 				x: figureX + 1,
 				y: figureY - 1
+			});
+
+	if (turn == -1 && figureX >= 1 && figureY <= 6)
+		if (map[figureX - 1][figureY + 1] == 0)
+			result.push({
+				x: figureX - 1,
+				y: figureY + 1
+			});
+
+	if (turn == -1 && figureX <= 6 && figureY <= 6)
+		if (map[figureX + 1][figureY + 1] == 0)
+			result.push({
+				x: figureX + 1,
+				y: figureY + 1
 			});
 
 	return result;
@@ -258,33 +315,7 @@ fillField = () => {
 			if ((x + y) % 2 == 0) {
 				let color = y < 3 ? "black" : "white";
 				let figure = createNewFigure(color, 20);
-				setFigure(figure, x, y);
-				figure.addEventListener("click", e => {
-					if (turn != (figure.style.color == "white" ? 1 : -1))
-						return;
-
-					temporary = activatedCells;
-					activatedCells = [];
-					setCellsColor(temporary, "black");
-					temporary = getNextStepCellsCoordinates(figure);
-					setCellsColor(temporary, "red");
-					activatedCells = temporary;
-				});
-				figure.addEventListener("mouseover", e => {
-					if (turn != (figure.style.color == "white" ? 1 : -1))
-						return;
-
-					nextCoordinates = getNextStepCellsCoordinates(figure);
-					setCellsColor(nextCoordinates, "orange");
-					setCellsHeight(nextCoordinates, 10);
-					figure.style.transform = "translateZ(25px)";
-				});
-				figure.addEventListener("mouseleave", e => {
-					nextCoordinates = getNextStepCellsCoordinates(figure);
-					setCellsColor(nextCoordinates, "black");
-					setCellsHeight(nextCoordinates, -20);
-					figure.style.transform = "translateZ(5px)";
-				});
+				setFigurePlace(figure, x, y);
 			}
 		}
 }
@@ -293,4 +324,25 @@ fillField = () => {
 
 
 generate();
-fillField();
+// fillField();
+
+
+
+
+let fig1 = createNewFigure("black");
+setFigurePlace(fig1, 1, 3);
+
+let fig2 = createNewFigure("white");
+setFigurePlace(fig2, 2, 4);
+
+let fig3 = createNewFigure("black");
+setFigurePlace(fig3, 6, 4);
+
+let fig4 = createNewFigure("white");
+setFigurePlace(fig4, 5, 3);
+
+let fig5 = createNewFigure("black");
+setFigurePlace(fig5, 3, 1);
+
+let fig6 = createNewFigure("white");
+setFigurePlace(fig6, 4, 6);
