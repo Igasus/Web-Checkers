@@ -6,6 +6,7 @@ let activatedCells = [];
 let turn = 1;
 let selectedFigure;
 let clearedFigures = [];
+let inProcess = false;
 
 generate = () => {
 	for (let i = 0; i < 8; i++) {
@@ -39,7 +40,9 @@ generate = () => {
 				newElement.classList.add((x + y) % 2 == 0 ? "black" : "white");
 				newElement.id = `${x - 1}_${y - 1}`;
 
-				newElement.addEventListener("click", e => {
+				newElement.addEventListener("click", async e => {
+					inProcess = true;
+
 					let cellActivated = false;
 					for (let cell of activatedCells)
 						if (cell.x == x - 1 && cell.y == y - 1) {
@@ -58,23 +61,21 @@ generate = () => {
 					if (Math.abs(selectedFigureCoordinates.x - x + 1) == 2)
 						toClearFigure = getFigure((selectedFigureCoordinates.x + x - 1) / 2, (selectedFigureCoordinates.y + y - 1) / 2);
 					
-					moveFigure(selectedFigure, x - 1, y - 1);
+					await moveFigure(selectedFigure, x - 1, y - 1);
 					if (toClearFigure) {
-						clearFigure(toClearFigure);
+						await clearFigure(toClearFigure);
 						let mustSteps = getMustSteps(x - 1, y - 1)
-						if (mustSteps.length == 0) {
-							turn *= -1;
-							selectedFigure = null;
-						}
+						if (mustSteps.length == 0)
+							changeTurn();
 						else {
 							activatedCells = mustSteps;
 							setCellsColor(activatedCells, "red");
 						}
 					}
-					else {
-						turn *= -1;
-						selectedFigure = null;
-					}
+					else
+						changeTurn();
+
+					inProcess = false;
 				});
 
 				newElement.addEventListener("mouseover", e => {
@@ -140,7 +141,7 @@ background.addEventListener("mousemove", e => {
 	horizontalAngle = ((horizontalAngle + dx * 0.01) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
 	verticalAngle = ((verticalAngle - dy * 0.01) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
 
-	field.style.transform = `rotateX(${verticalAngle}rad) rotateY(${horizontalAngle}rad)`;
+	field.style.transform = `rotateX(${verticalAngle}rad) rotateY(${horizontalAngle}rad) rotateZ(${90 - turn * 90}deg)`;
 });
 
 
@@ -187,6 +188,8 @@ createNewFigure = (color, segmentsAmount = 20) => {
 	}
 
 	figure.addEventListener("click", e => {
+		if (inProcess)
+			return;
 		let mustStepsFigures = getMustStepsFigures();
 		let breakFunction = true;
 		if (mustStepsFigures.length > 0) {
@@ -209,6 +212,8 @@ createNewFigure = (color, segmentsAmount = 20) => {
 	});
 
 	figure.addEventListener("mouseover", e => {
+		if (inProcess)
+			return;
 		let mustStepsFigures = getMustStepsFigures();
 		let breakFunction = true;
 		if (mustStepsFigures.length > 0) {
@@ -232,6 +237,8 @@ createNewFigure = (color, segmentsAmount = 20) => {
 	});
 
 	figure.addEventListener("mouseleave", e => {
+		if (inProcess)
+			return;
 		if (isCleared(figure))
 			return;
 		nextCoordinates = getNextStepCellsCoordinates(figure);
@@ -264,21 +271,25 @@ setFigurePlace = (figure, x, y) => {
 		map[x][y] = figure.style.color == "black" ? -1 : 1;
 }
 
-moveFigure = (figure, x, y) => {
+moveFigure = async (figure, x, y) => {
 	animationDuration = 600;
-	figure.style.transition = `transform ${animationDuration / 2000}s linear, left ${animationDuration / 1000}s ease-in-out, top ${animationDuration / 1000}s ease-in-out`;
-	figure.style.transform = "translateZ(50px)";
-	setFigurePlace(figure, x, y);
-	setTimeout(() => {
-		figure.style.transform = "translateZ(5px)";
+	let moving = new Promise((resolve, reject) => {
+		figure.style.transition = `transform ${animationDuration / 2000}s linear, left ${animationDuration / 1000}s ease-in-out, top ${animationDuration / 1000}s ease-in-out`;
+		figure.style.transform = "translateZ(50px)";
+		setFigurePlace(figure, x, y);
 		setTimeout(() => {
-			figure.style.transition = "all 0.1s ease-in-out";
+			figure.style.transform = "translateZ(5px)";
+			setTimeout(() => {
+				figure.style.transition = "all 0.1s ease-in-out";
+				resolve();
+			}, animationDuration / 2);
 		}, animationDuration / 2);
-	}, animationDuration / 2);
+	});
+	return await moving;
 }
 
-clearFigure = figure => {
-	moveFigure(figure, -3, -3);
+clearFigure = async figure => {
+	await moveFigure(figure, -3, -3);
 	clearedFigures.push(figure);
 }
 
@@ -287,6 +298,17 @@ isCleared = figure => {
 		if (element == figure)
 			return true;
 	return false;
+}
+
+changeTurn = () => {
+	let rotatingDuration = 1000;
+	turn *= -1;
+	selectedFigure = null;
+	field.style.transition = `transform ${rotatingDuration / 1000}s ease-in-out`;
+	field.style.transform = `rotateX(${verticalAngle}rad) rotateY(${horizontalAngle}rad) rotateZ(${90 - turn * 90}deg)`;
+	setTimeout(() => {
+		field.style.transition = "none";
+	}, rotatingDuration);
 }
 
 
@@ -453,7 +475,7 @@ fillField = () => {
 
 			if ((x + y) % 2 == 0) {
 				let color = y < 3 ? "black" : "white";
-				let figure = createNewFigure(color, 20);
+				let figure = createNewFigure(color, 15);
 				setFigurePlace(figure, x, y);
 			}
 		}
