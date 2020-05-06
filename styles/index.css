@@ -216,6 +216,26 @@ input[type=radio]:checked + label:before {
 
 
 
+#refresh {
+	width: 100px;
+	height: 32px;
+	background-color: #fff;
+	border: solid 1px grey;
+	position: absolute;
+	top: 10px;
+	left: 100px;
+	cursor: pointer;
+	transition: all 0.2s ease-in-out;
+}
+
+#refresh:hover {
+	background-color: grey;
+	color: #fff;
+}
+
+
+
+
 
 .figure {
 	position: absolute;

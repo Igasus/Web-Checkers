@@ -5,6 +5,7 @@ let map = [];
 let activatedCells = [];
 let turn = 1;
 let selectedFigure;
+let clearedFigures = [];
 
 generate = () => {
 	for (let i = 0; i < 8; i++) {
@@ -51,7 +52,29 @@ generate = () => {
 
 					setCellsColor(activatedCells, "black");
 					activatedCells = [];
+					
+					let toClearFigure;
+					let selectedFigureCoordinates = getFigureCoordinates(selectedFigure);
+					if (Math.abs(selectedFigureCoordinates.x - x + 1) == 2)
+						toClearFigure = getFigure((selectedFigureCoordinates.x + x - 1) / 2, (selectedFigureCoordinates.y + y - 1) / 2);
+					
 					moveFigure(selectedFigure, x - 1, y - 1);
+					if (toClearFigure) {
+						clearFigure(toClearFigure);
+						let mustSteps = getMustSteps(x - 1, y - 1)
+						if (mustSteps.length == 0) {
+							turn *= -1;
+							selectedFigure = null;
+						}
+						else {
+							activatedCells = mustSteps;
+							setCellsColor(activatedCells, "red");
+						}
+					}
+					else {
+						turn *= -1;
+						selectedFigure = null;
+					}
 				});
 
 				newElement.addEventListener("mouseover", e => {
@@ -164,7 +187,20 @@ createNewFigure = (color, segmentsAmount = 20) => {
 	}
 
 	figure.addEventListener("click", e => {
-		if (turn != (figure.style.color == "white" ? 1 : -1))
+		let mustStepsFigures = getMustStepsFigures();
+		let breakFunction = true;
+		if (mustStepsFigures.length > 0) {
+			for (let element of mustStepsFigures)
+				if (element == figure) {
+					breakFunction = false;
+					break;
+				}
+		}
+		else if (turn == (figure.style.color == "white" ? 1 : -1) && !isCleared(figure))
+			breakFunction = false;
+		if (breakFunction)
+			return;
+		if (selectedFigure && selectedFigure != figure)
 			return;
 		setCellsColor(activatedCells, "black");
 		activatedCells = getNextStepCellsCoordinates(figure);
@@ -173,7 +209,20 @@ createNewFigure = (color, segmentsAmount = 20) => {
 	});
 
 	figure.addEventListener("mouseover", e => {
-		if (turn != (figure.style.color == "white" ? 1 : -1))
+		let mustStepsFigures = getMustStepsFigures();
+		let breakFunction = true;
+		if (mustStepsFigures.length > 0) {
+			for (let element of mustStepsFigures)
+				if (element == figure) {
+					breakFunction = false;
+					break;
+				}
+		}
+		else if (turn == (figure.style.color == "white" ? 1 : -1) && !isCleared(figure))
+			breakFunction = false;
+		if (breakFunction)
+			return;
+		if (selectedFigure && selectedFigure != figure)
 			return;
 		nextCoordinates = getNextStepCellsCoordinates(figure);
 		setCellsColor(nextCoordinates, "orange", true);
@@ -183,12 +232,16 @@ createNewFigure = (color, segmentsAmount = 20) => {
 	});
 
 	figure.addEventListener("mouseleave", e => {
+		if (isCleared(figure))
+			return;
 		nextCoordinates = getNextStepCellsCoordinates(figure);
 		setCellsColor(nextCoordinates, "black", true);
 		setCellsHeight(nextCoordinates, -20);
 		figure.style.cursor = "default";
 		figure.style.transform = "translateZ(5px)";
 	});
+
+	field.appendChild(figure);
 
 	return figure;
 }
@@ -205,17 +258,35 @@ setFigurePlace = (figure, x, y) => {
 	figure.style.right = "auto";
 	figure.style.bottom = "auto";
 
-	field.appendChild(figure);
 	if (currentCoordinates.x >= 0 && currentCoordinates.x < 8 && currentCoordinates.y >= 0 && currentCoordinates.y < 8)
 		map[currentCoordinates.x][currentCoordinates.y] = 0;
-	map[x][y] = figure.style.color == "black" ? -1 : 1;
+	if (x >= 0 && x < 8 && y >= 0 && y < 8)
+		map[x][y] = figure.style.color == "black" ? -1 : 1;
 }
 
 moveFigure = (figure, x, y) => {
-	figure.style.transition = "all 1s ease-in-out !important";
-	figure.style.transform = "translateZ(30px)";
+	animationDuration = 600;
+	figure.style.transition = `transform ${animationDuration / 2000}s linear, left ${animationDuration / 1000}s ease-in-out, top ${animationDuration / 1000}s ease-in-out`;
+	figure.style.transform = "translateZ(50px)";
 	setFigurePlace(figure, x, y);
-	figure.style.transition = "all 0.1s ease-in-out";
+	setTimeout(() => {
+		figure.style.transform = "translateZ(5px)";
+		setTimeout(() => {
+			figure.style.transition = "all 0.1s ease-in-out";
+		}, animationDuration / 2);
+	}, animationDuration / 2);
+}
+
+clearFigure = figure => {
+	moveFigure(figure, -3, -3);
+	clearedFigures.push(figure);
+}
+
+isCleared = figure => {
+	for (let element of clearedFigures)
+		if (element == figure)
+			return true;
+	return false;
 }
 
 
@@ -237,14 +308,20 @@ getFigureCoordinates = figure => {
 	return result;
 }
 
+getFigure = (x, y) => {
+	let allFigures = field.getElementsByClassName("figure");
+	for (let element of allFigures) {
+		let coordinates = getFigureCoordinates(element);
+		if (coordinates.x == x && coordinates.y == y)
+			return element;
+	}
+}
 
 
 
-getMustSteps = figureCoordinates => {
+
+getMustSteps = (figureX, figureY) => {
 	let result = [];
-
-	let figureX = figureCoordinates.x;
-	let figureY = figureCoordinates.y;
 
 	if (figureX >= 2 && figureY >= 2)
 		if (map[figureX - 1][figureY - 1] == -map[figureX][figureY])
@@ -281,13 +358,26 @@ getMustSteps = figureCoordinates => {
 	return result;
 }
 
+getMustStepsFigures = () => {
+	let allFigures = field.getElementsByClassName("figure");
+	let result = [];
+	for (let x = 0; x < 8; x++)
+		for (let y = 0; y < 8; y++)
+			if (map[x][y] == turn) {
+				let mustSteps = getMustSteps(x, y);
+				if (mustSteps.length > 0)
+					result.push(getFigure(x, y));
+			}
+	return result;
+}
+
 
 
 getNextStepCellsCoordinates = figure => {
 	let figureCoordinates = getFigureCoordinates(figure);
 	let figureX = figureCoordinates.x;
 	let figureY = figureCoordinates.y;
-	let mustSteps = getMustSteps(figureCoordinates);
+	let mustSteps = getMustSteps(figureX, figureY);
 
 	if (mustSteps.length > 0)
 		return mustSteps;
@@ -369,29 +459,14 @@ fillField = () => {
 		}
 }
 
+document.getElementById("refresh").addEventListener("click", e => {
+	let classList = field.getElementsByClassName("figure");
+	while (classList[0])
+		field.removeChild(classList[0]);
 
+	fillField();	
+});
 
 
 generate();
-fillField();
 
-
-
-
-// let fig1 = createNewFigure("black");
-// setFigurePlace(fig1, 1, 3);
-
-// let fig2 = createNewFigure("white");
-// setFigurePlace(fig2, 2, 4);
-
-// let fig3 = createNewFigure("black");
-// setFigurePlace(fig3, 6, 4);
-
-// let fig4 = createNewFigure("white");
-// setFigurePlace(fig4, 5, 3);
-
-// let fig5 = createNewFigure("black");
-// setFigurePlace(fig5, 3, 1);
-
-// let fig6 = createNewFigure("white");
-// setFigurePlace(fig6, 4, 6);
