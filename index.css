@@ -1,267 +1,97 @@
 * {
-	padding: 0;
 	margin: 0;
+	padding: 0;
 	outline: none;
-	text-decoration: none;
 }
 
-body {
-	position: absolute;
-	height: 100vh;
-	width: 100vw;
-	overflow: hidden;
-	background-color: #ddd;
-	perspective: 2000px;
-}
-
-#background {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	width: 100%;
-	height: 100%;
-	cursor: all-scroll;
-	pointer-events: none;
-	z-index: 2;
-}
-
-#field {
-	position: relative;
-	margin: calc(50vh - 370px) auto;
-	width: 740px;
-	height: 740px;
-	transform-style: preserve-3d;
-	z-index: 1;
-}
-
-.flat {
-	position: absolute;
-	background-color: #711;
-	border: solid 1px black;
-	transform-origin: center;
-}
-
-
-
-
-
-#field_front {
-	width: 100%;
-	height: 100%;
-	transform: translateZ(25px);
-	transform-style: preserve-3d;
-	background: none;
-}
-
-#field_front > * {
-	float: left;
-}
-
-.corner {
-	width: 40px;
-	height: 40px;
-	border: solid 1px black;
-	background-color: #882525;
-}
-
-.letter {
-	width: 80px;
-	height: 40px;
-	border: solid 1px black;
-	background-color: #882525;
-	display: flex;
-  	align-items: center;
-  	justify-content: center
-}
-
-.number {
-	width: 40px;
-	height: 80px;
-	border: solid 1px black;
-	background-color: #882525;
-	display: flex;
-  	align-items: center;
-  	justify-content: center
-}
-
-.number > p, .letter > p {
-	font-size: 20px;
-	user-select: none;
-}
-
-.cell {
-	width: 80px;
-	height: 80px;
-	border: solid 1px black;
-	transform: translateZ(-20px);
-	transition: all 0.1s ease-in-out;
-}
-
-.black { background-color: #000; }
-.black:before { background-color: #000;}
-.black:after { background-color: #000; border: solid 1px #fff; }
-.white { background-color: #fff; }
-.white:before { background-color: #fff;}
-.white:after { background-color: #fff; border: solid 1px #000; }
-
-
-
-
-
-#field_back {
-	width: 100%;
-	height: 100%;
-	transform: rotateY(180deg) translateZ(25px);
-}
-#field_up {
-	width: 100%;
-	height: 50px;
-	transform: rotateX(90deg) translateZ(25px);
-}
-#field_down {
-	width: 100%;
-	height: 50px;
-	transform: rotateX(-90deg) translateZ(715px);
-}
-#field_left {
-	width: 50px;
-	height: 100%;
-	transform: rotateY(90deg) translateZ(-25px);
-}
-#field_right {
-	width: 50px;
-	height: 100%;
-	transform: rotateY(-90deg) translateZ(-715px);
-}
-
-
-#field_up_inside {
-	width: calc(100% * 8 / 9);
-	height: 25px;
-	transform: rotateX(90deg) translateZ(-30px) translateX(40px) translateY(13px);
-	background-color: #511;
-}
-#field_down_inside {
-	width: calc(100% * 8 / 9);
-	height: 25px;
-	transform: rotateX(-90deg) translateZ(685px) translateX(40px) translateY(-13px);
-	background-color: #511;
-}
-#field_left_inside {
-	width: 25px;
-	height: calc(100% * 8 / 9);
-	transform: rotateY(90deg) translateZ(30px) translateX(-13px) translateY(40px);
-	background-color: #511
-}
-#field_right_inside {
-	width: 25px;
-	height: calc(100% * 8 / 9);
-	transform: rotateY(-90deg) translateZ(-685px) translateX(13px) translateY(40px);
-	background-color: #511;
-}
-
-
-
-
-
-#cursor_modes {
+#zone_3d {
 	position: absolute;
 	top: 0;
 	left: 0;
-	z-index: 3;
-	padding: 5px;
-}
-
-input[type=radio] {
-  	visibility: hidden;
-  	position: absolute;
-}
-
-label {
-	width: 30px;
-	height: 30px;
-	margin: 5px;
- 	border: 1px solid grey;
-	border-radius: 50%;
-	background-color: #fff;
-	display: inline-block;
-	cursor: pointer;
-}
-
-input[type=radio] + label:before {
-	content: "";
-  	display: inline-block;
-  	height: 0px;
-  	width: 0px;
- 	margin: 15px;
- 	border-radius:50%;
- 	background-color: blue;
- 	transition: all 0.2s ease-in-out;
-}
-
-input[type=radio] + label:hover:before {
-	height: 14px;
-  	width: 14px;
- 	margin: 8px;
-}
-
-input[type=radio]:checked + label:before {
-	height: 24px;
-  	width: 24px;
- 	margin: 3px;
-}
-
-#play_mode + label { cursor: pointer; }
-#rotate_mode + label { cursor: all-scroll; }
-
-
-
-#refresh {
-	width: 100px;
-	height: 32px;
-	background-color: #fff;
-	border: solid 1px grey;
-	position: absolute;
-	top: 10px;
-	left: 100px;
-	cursor: pointer;
-	transition: all 0.2s ease-in-out;
-}
-
-#refresh:hover {
-	background-color: grey;
-	color: #fff;
-}
-
-
-
-
-
-.figure {
-	position: absolute;
-	display: inline-block;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
 	transform-style: preserve-3d;
-	transform: translateZ(5px);
-	transition: all 0.1s ease-in-out;
+	perspective: 1500px;
 }
 
-.figure:before, .figure:after {
-	content: "";
+#field {
 	position: absolute;
-	display: inline-block;
-	width: 70px;
-	height: 70px;
-	border-radius: 50%;
-	transform: translate3d(-29px, -22px, 0);
+	transform-style: preserve-3d;
+	transform-origin: center center center;
+	left: 100px;
+	z-index: 1;
 }
 
-.figure:after { transform: translate3d(-29px, -22px, 27px); }
+#field_table {
+	border-collapse: collapse;
+}
 
-.figure-segment {
-	position: absolute;
-	display: inline-block;
-	height: 25px;
-	background-color: grey;
+.field-table-corner-element {
+	width: 48px;
+	height: 48px;
+	background-color: brown;
 	border: solid 1px black;
-	backface-visibility: hidden;
+}
+
+.field-table-letter-element {
+	width: 78px;
+	height: 48px;
+	line-height: 48px;
+	text-align: center;
+	font-size: 25px;
+	background-color: brown;
+	border: solid 1px black;
+}
+
+.field-table-number-element {
+	width: 48px;
+	height: 78px;
+	line-height: 78px;
+	text-align: center;
+	font-size: 25px;
+	background-color: brown;
+	border: solid 1px black;
+}
+
+.field-table-figure-element {
+	width: 80px;
+	height: 80px;
+}
+
+.field-side {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform-origin: center top;
+	width: 738px;
+	height: 38px;
+	background-color: brown;
+	border: solid 1px black;
+}
+
+#field_side_0 { transform: rotateX(270deg) translate3d(-50%, 0, 370px) rotateY(0deg); }
+#field_side_1 { transform: rotateX(270deg) rotateY(90deg); }
+#field_side_2 { transform: rotateX(270deg) translate3d(-50%, 0, -370px) rotateY(180deg); }
+#field_side_3 { transform: rotateX(270deg) translate3d(-100%, 0, 0) rotateY(270deg); }
+#field_side_4 {
+	top: 0;
+	left: 0;
+	width: calc(100% - 2px);
+	height: calc(100% - 2px);
+	transform: rotateY(180deg) translateZ(40px);
+}
+
+
+
+
+
+#drag_field {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+	z-index: 2;
 }

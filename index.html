@@ -1,36 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>Шашки</title>
+	<title>Web-Checkers</title>
 	<link rel="stylesheet" type="text/css" href="index.css">
+	<script type="text/javascript" src="index.js"></script>
+	<script type="text/javascript" src="field_rotating.js"></script>
 </head>
 <body>
-	<form id="cursor_modes">
-		<input type="radio" OnChange="onModeChange(event)" name="cursor_mode" id="play_mode" value="play" checked="true">
-		<label for="play_mode"></label>
 
-		<input type="radio" OnChange="onModeChange(event)" name="cursor_mode" id="rotate_mode" value="rotate">
-		<label for="rotate_mode"></label>
-	</form>
-
-	<button id="refresh">Refresh field</button>
-	
-
-	<div id="field">
-		<div class="flat" id="field_front"></div>
-		<div class="flat" id="field_back"></div>
-		<div class="flat" id="field_up"></div>
-		<div class="flat" id="field_down"></div>
-		<div class="flat" id="field_left"></div>
-		<div class="flat" id="field_right"></div>
-
-		<div class="flat" id="field_up_inside"></div>
-		<div class="flat" id="field_down_inside"></div>
-		<div class="flat" id="field_left_inside"></div>
-		<div class="flat" id="field_right_inside"></div>
+	<div id="zone_3d">
+		<div id="field">
+			<table id="field_table"></table>
+		</div>
 	</div>
-	<div id="background"></div>
+
+	<div id="drag_field"></div>
+
 </body>
-<script type="text/javascript" src="index.js"></script>
 </html>
