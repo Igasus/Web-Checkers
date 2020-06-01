@@ -1,0 +1,33 @@
+.figure {
+	top: 50%;
+	left: 50%;
+	position: absolute;
+	transform-origin: center center;
+	transform-style: preserve-3d;
+	transform: translate3d(-50%, -50%, 1px);
+	transition: all 1s ease-in-out;
+}
+
+.figure-floor {
+	position: absolute;
+	width: calc(100% - 4px);
+	height: calc(100% - 4px);
+	border-radius: 50%;
+	border: solid 2px grey;
+}
+
+.figure-ceil {
+	position: absolute;
+	width: calc(100% - 4px);
+	height: calc(100% - 4px);
+	border-radius: 50%;
+	border: solid 2px grey;
+}
+
+.figure-wall {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	border: solid 1px grey;
+	transform-origin: center center;
+}

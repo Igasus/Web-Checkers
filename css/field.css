@@ -1,26 +1,9 @@
-* {
-	margin: 0;
-	padding: 0;
-	outline: none;
-}
-
-#zone_3d {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-	transform-style: preserve-3d;
-	perspective: 1500px;
-}
-
 #field {
 	position: absolute;
 	transform-style: preserve-3d;
 	transform-origin: center center center;
-	left: 100px;
-	z-index: 1;
+	top: 50%;
+	transform: translateY(-50%);
 }
 
 #field_table {
@@ -80,18 +63,4 @@
 	width: calc(100% - 2px);
 	height: calc(100% - 2px);
 	transform: rotateY(180deg) translateZ(40px);
-}
-
-
-
-
-
-#drag_field {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	cursor: pointer;
-	z-index: 2;
 }

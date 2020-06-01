@@ -1,0 +1,37 @@
+#mode_choose_form {
+	position: fixed;
+	z-index: 3;
+}
+
+#mode_choose_form input {
+	width: 0;
+	height: 0;
+	opacity: 0;
+}
+
+#mode_choose_form label {
+	position: absolute;
+	width: 25px;
+	height: 25px;
+	border-radius: 5px;
+	border: solid 2px black;
+	background-color: white;
+}
+
+#playing_label {
+	top: 20px;
+	left: 20px;
+}
+
+#rotating_label {
+	top: 20px;
+	left: 50px;
+}
+
+#mode_choose_form input:checked + label {
+	background-color: black;
+}
+
+#mode_choose_form label:hover {
+	background-color: grey;
+}
