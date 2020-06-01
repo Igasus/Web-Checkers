@@ -29,7 +29,7 @@ rotateField = (mouseX, mouseY) => {
 	let dy = mouseY - currentY;
 	xAngle -= dy;
 	yAngle += dx;
-	field.style.transform = `translateY(-50%) rotateX(${xAngle}deg) rotateY(${yAngle}deg) scale3d(${1 + zoom / 100}, ${1 + zoom / 100}, ${1 + zoom / 100})`;
+	field.style.transform = `translateY(-50%) rotateX(${xAngle}deg) rotateY(${yAngle}deg) rotateZ(${fieldMoveAngle}deg) scale3d(${1 + zoom / 100}, ${1 + zoom / 100}, ${1 + zoom / 100})`;
 	currentX = mouseX;
 	currentY = mouseY;
 }
@@ -41,5 +41,5 @@ zoomField = deltaZ => {
 	if (zoom < -90)
 		zoom = -90;
 
-	field.style.transform = `translateY(-50%) rotateX(${xAngle}deg) rotateY(${yAngle}deg) scale3d(${1 + zoom / 100}, ${1 + zoom / 100}, ${1 + zoom / 100})`;
+	field.style.transform = `translateY(-50%) rotateX(${xAngle}deg) rotateY(${yAngle}deg) rotateZ(${fieldMoveAngle}deg) scale3d(${1 + zoom / 100}, ${1 + zoom / 100}, ${1 + zoom / 100})`;
 }

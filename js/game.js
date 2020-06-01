@@ -20,6 +20,7 @@ let figuresMap = [
 ];
 let selectedFigure = null;
 let currentMoveColor = 1;
+let fieldMoveAngle = 0;
 
 
 
@@ -316,13 +317,12 @@ makeMove = async (x, y) => {
 	if (!move)
 		return;
 
-	if (currentMoveColor == 1 && y == 0 || currentMoveColor == -1 && y == 7)
-		if (!isQueen(x, y))
-			makeFigureQueen(x, y);
-
 	setAllFieldSquaresDefaultColor();
 
 	await replaceFigure(selectedFigure, x, y);
+	if (currentMoveColor == 1 && y == 0 || currentMoveColor == -1 && y == 7)
+		if (!isQueen(x, y))
+			makeFigureQueen(x, y);
 	if ((move.beatenX || move.beatenX == 0) && (move.beatenY || move.beatenY == 0)) {
 		await removeFigure(move.beatenX, move.beatenY);
 		let obligatoryMoves = getObligatoryMoves(x, y);
@@ -333,6 +333,12 @@ makeMove = async (x, y) => {
 		}
 	}
 
+	fieldMoveAngle = fieldMoveAngle == 0 ? 180 : 0;
+	field.style.transition = "all 0.4s ease-in-out";
+	field.style.transform = `translateY(-50%) rotateX(${xAngle}deg) rotateY(${yAngle}deg) rotateZ(${fieldMoveAngle}deg) scale3d(${1 + zoom / 100}, ${1 + zoom / 100}, ${1 + zoom / 100})`;
+	setTimeout(() => {
+		field.style.transition = "none";
+	}, 400);
 	selectedFigure = null;
 	currentMoveColor *= -1;
 }

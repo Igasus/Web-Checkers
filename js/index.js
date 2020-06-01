@@ -3,8 +3,8 @@ let dragZone;
 const figure_radius = 30;
 const figure_height = 25;
 const wall_segments_amount = 12;
-const figure_replacing_duration = 300;
-const figure_replacing_lifting_height = figure_height + 40;
+const figure_replacing_duration = 500;
+const figure_replacing_lifting_height = figure_height + 20;
 
 const field_border_size = 50;
 const field_square_size = 80;

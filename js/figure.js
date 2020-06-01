@@ -51,7 +51,7 @@ replaceFigure = async (figure, x, y) => {
 			let startY = startCoordinates.y;
 
 			inProcess = true;
-			figure.transition = `top ${figure_replacing_duration}ms linear, left ${figure_replacing_duration}ms linear, transform ${figure_replacing_duration / 2}ms ease-in-out`;
+			figure.style.transition = `top ${figure_replacing_duration}ms ease-in-out, left ${figure_replacing_duration}ms ease-in-out, transform ${figure_replacing_duration / 2}ms linear`;
 			figure.style.transform = `translate3d(-50%, -50%, ${figure_replacing_lifting_height}px)`;
 			figure.style.top = top;
 			figure.style.left = left;
@@ -65,9 +65,10 @@ replaceFigure = async (figure, x, y) => {
 					figuresMap[x][y] = figure;
 					figuresMap[startX][startY] = null;
 
+					figure.style.transition = "none";
 					resolve();
-				}, figure_replacing_duration);
-			}, figure_replacing_duration);
+				}, figure_replacing_duration / 2);
+			}, figure_replacing_duration / 2);
 		}
 		else {
 			figure.style.top = top;
