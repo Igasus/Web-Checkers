@@ -1,7 +1,6 @@
 #field {
 	position: absolute;
 	transform-style: preserve-3d;
-	transform-origin: center center center;
 	top: 50%;
 	transform: translateY(-50%);
 }
